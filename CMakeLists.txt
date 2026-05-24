@@ -130,6 +130,10 @@ if(nlohmann_json_FOUND)
     target_link_libraries(alkaidlab_fw nlohmann_json::nlohmann_json)
 endif()
 
+if(WIN32)
+    target_link_libraries(alkaidlab_fw iphlpapi ws2_32)
+endif()
+
 # ---- 安装规则 ----
 install(TARGETS alkaidlab_fw
     ARCHIVE DESTINATION lib

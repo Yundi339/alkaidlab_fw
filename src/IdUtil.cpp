@@ -9,13 +9,20 @@
 #include <boost/chrono.hpp>
 #include <sstream>
 #include <stdexcept>
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include <ifaddrs.h>
-#include <unistd.h>
 #include <cstring>
-#include <netpacket/packet.h>
 #include <cstdlib>
+#include <vector>
+#ifdef _WIN32
+  #include <winsock2.h>
+  #include <iphlpapi.h>
+  #pragma comment(lib, "iphlpapi.lib")
+#else
+  #include <sys/ioctl.h>
+  #include <net/if.h>
+  #include <ifaddrs.h>
+  #include <unistd.h>
+  #include <netpacket/packet.h>
+#endif
 
 namespace alkaidlab {
 namespace fw {
@@ -107,11 +114,42 @@ namespace {
         gethostname(hostname, sizeof(hostname));
         
         // 2. 获取MAC地址
-        struct ifaddrs* ifap = nullptr;
-        struct ifaddrs* ifa = nullptr;
         unsigned char macAddr[6] = {0};
         bool macFound = false;
-        
+
+#ifdef _WIN32
+        {
+            ULONG bufLen = 16 * 1024;
+            std::vector<unsigned char> buf(bufLen);
+            ULONG flags = GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_MULTICAST | GAA_FLAG_SKIP_DNS_SERVER;
+            DWORD ret = GetAdaptersAddresses(AF_UNSPEC, flags, nullptr,
+                                             reinterpret_cast<IP_ADAPTER_ADDRESSES*>(buf.data()),
+                                             &bufLen);
+            if (ret == ERROR_BUFFER_OVERFLOW) {
+                buf.resize(bufLen);
+                ret = GetAdaptersAddresses(AF_UNSPEC, flags, nullptr,
+                                           reinterpret_cast<IP_ADAPTER_ADDRESSES*>(buf.data()),
+                                           &bufLen);
+            }
+            if (ret == NO_ERROR) {
+                for (IP_ADAPTER_ADDRESSES* a = reinterpret_cast<IP_ADAPTER_ADDRESSES*>(buf.data());
+                     a != nullptr; a = a->Next) {
+                    if (a->IfType == IF_TYPE_SOFTWARE_LOOPBACK) continue;
+                    if (a->PhysicalAddressLength != 6) continue;
+                    bool allZero = true;
+                    for (int i = 0; i < 6; ++i) {
+                        if (a->PhysicalAddress[i] != 0) { allZero = false; break; }
+                    }
+                    if (allZero) continue;
+                    memcpy(macAddr, a->PhysicalAddress, 6);
+                    macFound = true;
+                    break;
+                }
+            }
+        }
+#else
+        struct ifaddrs* ifap = nullptr;
+        struct ifaddrs* ifa = nullptr;
         if (getifaddrs(&ifap) == 0) {
             for (ifa = ifap; ifa != nullptr; ifa = ifa->ifa_next) {
                 if (ifa->ifa_addr == nullptr) {
@@ -145,6 +183,7 @@ namespace {
             }
             freeifaddrs(ifap);
         }
+#endif
         
         // 3. 计算混合哈希：主机名 + MAC 地址
         size_t hash = 0;

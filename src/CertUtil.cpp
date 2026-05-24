@@ -13,6 +13,10 @@
 
 #include <cstdio>
 #include <cstring>
+#ifdef _WIN32
+#else
+  #include <sys/stat.h>
+#endif
 
 namespace alkaidlab {
 namespace fw {
@@ -120,7 +124,9 @@ bool CertUtil::generateSelfSigned(const std::string& certPath,
         goto cleanup;
     }
     std::fclose(fp);
+#ifndef _WIN32
     chmod(keyPath.c_str(), 0600);
+#endif
 
     /* 写入证书文件 */
     fp = std::fopen(certPath.c_str(), "wb");

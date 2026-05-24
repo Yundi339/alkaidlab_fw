@@ -1,7 +1,7 @@
 #include "fw/LogConfig.hpp"
 #include <hv/hlog.h>
-#include <sys/stat.h>
-#include <errno.h>
+#include <boost/filesystem.hpp>
+#include <boost/system/error_code.hpp>
 #include <string>
 
 namespace alkaidlab {
@@ -36,16 +36,13 @@ void LogConfig::setLevel(int level) {
 
 bool LogConfig::ensureDirectory(const std::string& dir) {
     if (dir.empty()) return false;
-    struct stat st;
-    if (stat(dir.c_str(), &st) == 0) {
-        return S_ISDIR(st.st_mode);
+    boost::system::error_code ec;
+    boost::filesystem::path p(dir);
+    if (boost::filesystem::exists(p, ec)) {
+        return boost::filesystem::is_directory(p, ec);
     }
-    // 递归创建：先确保父目录存在
-    std::string::size_type pos = dir.rfind('/');
-    if (pos != std::string::npos && pos > 0) {
-        if (!ensureDirectory(dir.substr(0, pos))) return false;
-    }
-    return mkdir(dir.c_str(), 0755) == 0 || errno == EEXIST;
+    boost::filesystem::create_directories(p, ec);
+    return !ec && boost::filesystem::is_directory(p, ec);
 }
 
 bool LogConfig::initialize(const std::string& logDir,
