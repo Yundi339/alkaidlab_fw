@@ -50,7 +50,7 @@ C++11 HTTP 服务端框架抽象层，解耦业务逻辑与 libhv。
 ## 构建
 
 ```bash
-bash build.sh                           # 构建+安装到上级 build_cache/alkaidlab_framework_install/
+bash build.sh                           # 构建+安装到上级 build_cache/alkaidlab_fw_install/
 bash build.sh --test                    # 构建+测试
 bash build.sh --clean                   # 清空重建
 bash build.sh --vcpkg-root /path/vcpkg  # 指定 vcpkg 根目录
@@ -67,10 +67,10 @@ libhv 走**缓存式构建**：build.sh 检测到 `build_cache/libhv_install/lib
 
 ```bash
 # 在项目根执行
-rm -rf third_party/alkaidlab_framework/build_cache/libhv_install/   # libhv 安装产物（关键）
-rm -rf third_party/alkaidlab_framework/third_party/libhv/build/     # libhv 编译中间产物
-rm -rf third_party/alkaidlab_framework/build/                       # fw 编译目录（需重链）
-rm -rf build_cache/alkaidlab_framework_install/                     # fw 已安装产物
+rm -rf third_party/alkaidlab_fw/build_cache/libhv_install/   # libhv 安装产物（关键）
+rm -rf third_party/alkaidlab_fw/third_party/libhv/build/     # libhv 编译中间产物
+rm -rf third_party/alkaidlab_fw/build/                       # fw 编译目录（需重链）
+rm -rf build_cache/alkaidlab_fw_install/                     # fw 已安装产物
 find build/ -mindepth 1 -maxdepth 1 ! -name 'vcpkg_installed' -exec rm -rf {} +  # 主工程
 bash deploy/dev_install.sh --backend-only
 ```

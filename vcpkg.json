@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "name": "alkaidlab-framework",
   "version": "1.0.0",
-  "description": "alkaidlab_framework dependencies",
+  "description": "alkaidlab_fw dependencies",
   "builtin-baseline": "05442024c3fda64320bd25d2251cc9807b84fb6f",
   "dependencies": [
     "boost-system",

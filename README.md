@@ -1,4 +1,4 @@
-# alkaidlab_framework
+# alkaidlab_fw
 
 轻量级 C++11 HTTP 服务端框架，基于 libhv 封装。
 
@@ -6,8 +6,8 @@
 
 ```bash
 # 克隆仓库
-git clone --recursive git@github.com:Yundi339/alkaidlab_framework.git
-cd alkaidlab_framework
+git clone --recursive git@github.com:Yundi339/alkaidlab_fw.git
+cd alkaidlab_fw
 
 # 拉取子模块
 git submodule update --init --recursive
@@ -18,14 +18,14 @@ git submodule update --init --recursive
 
 ## 为什么做这个框架
 
-现有 C++ HTTP 框架普遍要求 C++14/17 甚至 C++20，对老旧生产环境（CentOS 7 等）不友好。alkaidlab_framework 的核心设计目标是 **最小兼容 C++11**，在保持现代框架风格（洋葱模型中间件、声明式路由、异步支持）的同时，确保可以在 GCC 4.8.5+ 环境中编译和运行。
+现有 C++ HTTP 框架普遍要求 C++14/17 甚至 C++20，对老旧生产环境（CentOS 7 等）不友好。alkaidlab_fw 的核心设计目标是 **最小兼容 C++11**，在保持现代框架风格（洋葱模型中间件、声明式路由、异步支持）的同时，确保可以在 GCC 4.8.5+ 环境中编译和运行。
 
 ## 模块功能
 
 框架分为四大模块：**核心**、**工具**、**并发**、**网络**。
 
 ```
-alkaidlab_framework/
+alkaidlab_fw/
 ├── 核心模块 ─────── Application / Router / Context / MiddlewareChain / IniConfig
 ├── 工具模块 ─────── JWT / Hash / Password / Base64 / PathGuard / Logger / Id / Time / Json / Cert
 ├── 并发模块 ─────── LockfreeQueue / SPSCQueue / AtomicCounter / FlowController / ThreadPool
@@ -92,13 +92,13 @@ alkaidlab_framework/
 
 ```bash
 # 在你的项目中添加子模块
-git submodule add git@github.com:Yundi339/alkaidlab_framework.git third_party/alkaidlab_framework
+git submodule add git@github.com:Yundi339/alkaidlab_fw.git third_party/alkaidlab_fw
 git submodule update --init --recursive
 
 # 构建（复用项目的 vcpkg）
-bash third_party/alkaidlab_framework/build.sh \
+bash third_party/alkaidlab_fw/build.sh \
     --vcpkg-root "$PWD/vcpkg" \
-    --install-dir "$PWD/build_cache/alkaidlab_framework_install"
+    --install-dir "$PWD/build_cache/alkaidlab_fw_install"
 ```
 
 ### 代码示例

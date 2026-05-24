@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# alkaidlab_framework — 自包含构建脚本
+# alkaidlab_fw — 自包含构建脚本
 # ============================================================================
 # 用法：
 #   ./build.sh                                    # 独立构建（自动 clone vcpkg）
@@ -47,11 +47,11 @@ done
 # 默认安装目录
 if [[ -z "$INSTALL_DIR" ]]; then
     PROJECT_ROOT="$(cd "$FW_DIR/../.." && pwd)"
-    INSTALL_DIR="$PROJECT_ROOT/build_cache/alkaidlab_framework_install"
+    INSTALL_DIR="$PROJECT_ROOT/build_cache/alkaidlab_fw_install"
 fi
 
 echo "================================================"
-echo "  alkaidlab_framework 构建"
+echo "  alkaidlab_fw 构建"
 echo "================================================"
 
 # ── [1/4] vcpkg 发现或 bootstrap ──
