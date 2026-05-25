@@ -67,6 +67,9 @@ if(WIN32)
         WIN32_LEAN_AND_MEAN
         NOGDI
     )
+    # 强制注入 POSIX 兼容垫片（localtime_r / gmtime_r 等）。
+    # PUBLIC 选项会传递给所有链接 alkaidlab_fw 的目标。
+    target_compile_options(alkaidlab_fw PUBLIC -include fw/WinPosixShim.hpp)
 endif()
 
 # 公开头文件目录：使用方 #include "fw/Context.hpp"
