@@ -8,6 +8,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/daily_file_sink.h>
+#include "fw/WindowsCompat.hpp"  // spdlog 可能在 Windows 拉入 windows.h 污染 ERROR 宏
 
 namespace alkaidlab {
 namespace fw {

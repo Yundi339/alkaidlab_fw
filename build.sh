@@ -82,11 +82,16 @@ else
     VCPKG_INSTALLED="$BUILD_DIR/vcpkg_installed"
 fi
 
-# vcpkg triplet（默认自动检测）
+# vcpkg triplet（默认按系统 + 架构自动检测）
 if [[ -z "$VCPKG_TRIPLET" ]]; then
     case "$(uname -s)" in
         MINGW*|MSYS*|CYGWIN*) VCPKG_TRIPLET="x64-mingw-dynamic" ;;
-        *)                    VCPKG_TRIPLET="x64-linux" ;;
+        *)
+            case "$(uname -m)" in
+                aarch64|arm64) VCPKG_TRIPLET="arm64-linux" ;;
+                *)             VCPKG_TRIPLET="x64-linux" ;;
+            esac
+            ;;
     esac
 fi
 OPENSSL_ROOT="$VCPKG_INSTALLED/$VCPKG_TRIPLET"

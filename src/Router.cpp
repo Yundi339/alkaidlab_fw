@@ -2,6 +2,7 @@
 #include <hv/HttpServer.h>
 #include <hv/HttpResponseWriter.h>
 #include <utility>  // std::move
+#include "fw/WindowsCompat.hpp"  // 必须在 libhv (windows.h) 之后, 清理 DELETE 宏污染
 
 namespace alkaidlab {
 namespace fw {
