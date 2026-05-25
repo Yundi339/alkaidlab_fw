@@ -7,6 +7,7 @@
 #   ./build.sh --vcpkg-root /path/to/vcpkg        # 复用已有 vcpkg
 #   ./build.sh --vcpkg-installed-dir /path/to/dir   # 指定 vcpkg_installed 目录
 #   ./build.sh --install-dir /path/to/out         # 指定安装目录
+#   ./build.sh --triplet x64-mingw-dynamic        # 指定 vcpkg triplet（默认自动检测）
 #   ./build.sh --test                             # 构建 + 测试
 #   ./build.sh --clean                            # 清空重建
 #
@@ -29,6 +30,7 @@ LIBHV_INSTALL="$FW_DIR/build_cache/libhv_install"
 INSTALL_DIR=""
 VCPKG_ROOT_OVERRIDE=""
 VCPKG_INSTALLED_OVERRIDE=""
+VCPKG_TRIPLET=""
 RUN_TESTS=false
 DO_CLEAN=false
 
@@ -38,6 +40,7 @@ while [[ $# -gt 0 ]]; do
         --install-dir)          INSTALL_DIR="$2"; shift 2 ;;
         --vcpkg-root)           VCPKG_ROOT_OVERRIDE="$2"; shift 2 ;;
         --vcpkg-installed-dir)  VCPKG_INSTALLED_OVERRIDE="$2"; shift 2 ;;
+        --triplet)              VCPKG_TRIPLET="$2"; shift 2 ;;
         --test)                 RUN_TESTS=true; shift ;;
         --clean)                DO_CLEAN=true; shift ;;
         *)                      echo "未知选项: $1"; exit 1 ;;
@@ -78,12 +81,20 @@ if [[ -n "$VCPKG_INSTALLED_OVERRIDE" ]]; then
 else
     VCPKG_INSTALLED="$BUILD_DIR/vcpkg_installed"
 fi
-OPENSSL_ROOT="$VCPKG_INSTALLED/x64-linux"
+
+# vcpkg triplet（默认自动检测）
+if [[ -z "$VCPKG_TRIPLET" ]]; then
+    case "$(uname -s)" in
+        MINGW*|MSYS*|CYGWIN*) VCPKG_TRIPLET="x64-mingw-dynamic" ;;
+        *)                    VCPKG_TRIPLET="x64-linux" ;;
+    esac
+fi
+OPENSSL_ROOT="$VCPKG_INSTALLED/$VCPKG_TRIPLET"
 
 if [[ ! -f "$OPENSSL_ROOT/lib/libssl.a" ]]; then
     echo "  安装 vcpkg 依赖..."
     "$VCPKG_DIR/vcpkg" install \
-        --triplet=x64-linux \
+        --triplet="$VCPKG_TRIPLET" \
         --x-install-root="$VCPKG_INSTALLED" \
         --x-manifest-root="$FW_DIR"
 fi
@@ -124,6 +135,7 @@ fi
 CMAKE_ARGS=(
     -B "$BUILD_DIR" -S "$FW_DIR"
     -DCMAKE_TOOLCHAIN_FILE="$VCPKG_TOOLCHAIN"
+    -DVCPKG_TARGET_TRIPLET="$VCPKG_TRIPLET"
     -DVCPKG_INSTALLED_DIR="$VCPKG_INSTALLED"
     -DVCPKG_INSTALL_OPTIONS="--no-print-usage"
     --log-level=NOTICE

@@ -72,9 +72,9 @@ else
 fi
 
 echo "=== Building libhv ==="
-cmake "$LIBHV_DIR" "${CMAKE_ARGS[@]}"
-make -j"$(nproc)"
-make install
+cmake -B "$BUILD_DIR" -S "$LIBHV_DIR" "${CMAKE_ARGS[@]}"
+cmake --build "$BUILD_DIR" -j"$(nproc 2>/dev/null || echo 4)"
+cmake --install "$BUILD_DIR"
 
 echo "libhv done:"
 ls -lh "$INSTALL_DIR/lib/"*hv* 2>/dev/null
