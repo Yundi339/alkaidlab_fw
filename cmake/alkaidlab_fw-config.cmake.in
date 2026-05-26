@@ -11,6 +11,13 @@ if(NOT TARGET alkaidlab_fw)
         IMPORTED_LOCATION "${ALKAIDLAB_FW_INSTALL_PREFIX}/lib/libalkaidlab_fw.a"
         INTERFACE_INCLUDE_DIRECTORIES "${ALKAIDLAB_FW_INSTALL_PREFIX}/include"
     )
+    # 把构建期的 libhv include 路径附到 alkaidlab_fw 上，
+    # 让所有链接 alkaidlab_fw 的目标（含 test_Context 等 fw 契约测试）
+    # 直接获得 <hv/HttpMessage.h> 等头文件的搜索路径，不依赖 _fw_libhv 中转。
+    if(IS_DIRECTORY "@_FW_LIBHV_INCLUDE@")
+        set_property(TARGET alkaidlab_fw APPEND PROPERTY
+            INTERFACE_INCLUDE_DIRECTORIES "@_FW_LIBHV_INCLUDE@")
+    endif()
     # Windows: 把构建时设置的 PUBLIC compile defs / options 也传给消费方。
     # 这些设置阻止 windows.h 注入 min/max/ERROR 等宏，并补齐 POSIX 兼容垫片。
     if(WIN32)
